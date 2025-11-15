@@ -1,0 +1,35 @@
+ChallanConsolidator.spec
+main.spec
+__pycache__/challan_info.cpython-313.pyc
+test folder/94C 2,500 02307.pdf
+test folder/94C 6,924 01071.pdf
+test folder/94C 8,585 05364.pdf
+test folder/94C 8,913 02502.pdf
+test folder/94C 9,446 01140.pdf
+test folder/94C 10,311 38825.pdf
+test folder/94C 10,892 10838.pdf
+test folder/94C 11,104 00638.pdf
+test folder/94C 12,092 01766.pdf
+test folder/94C 100 02368.pdf
+test folder/94J 6,400 09329.pdf
+test folder/94J 12,180 01060.pdf
+test folder/94J 12,400 14782.pdf
+test folder/94J 12,400 15216.pdf
+test folder/94J 12,400 39316.pdf
+test folder/94J 12,400 45095.pdf
+test folder/94J 12,400 56891.pdf
+test folder/94J 24,100 95066.pdf
+build/ChallanConsolidator/Analysis-00.toc
+build/ChallanConsolidator/base_library.zip
+build/ChallanConsolidator/ChallanConsolidator.pkg
+build/ChallanConsolidator/EXE-00.toc
+build/ChallanConsolidator/PKG-00.toc
+build/ChallanConsolidator/PYZ-00.pyz
+build/ChallanConsolidator/PYZ-00.toc
+build/ChallanConsolidator/warn-ChallanConsolidator.txt
+build/ChallanConsolidator/xref-ChallanConsolidator.html
+build/ChallanConsolidator/localpycs/pyimod01_archive.pyc
+build/ChallanConsolidator/localpycs/pyimod02_importers.pyc
+build/ChallanConsolidator/localpycs/pyimod03_ctypes.pyc
+build/ChallanConsolidator/localpycs/pyimod04_pywin32.pyc
+build/ChallanConsolidator/localpycs/struct.pyc

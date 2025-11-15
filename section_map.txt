@@ -1,0 +1,4 @@
+94C=194C - Works Contract,94H= 194H - Commission / Brokerage
+94I=194I(b) - Land / Building rent
+94J=194J - Fees / Royalty (Others)
+94Q=194Q - Purchase of goods
