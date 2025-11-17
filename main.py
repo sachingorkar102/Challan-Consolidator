@@ -20,9 +20,10 @@ def get_int(string: str) -> int:
     return int(re.sub(r"[^\d]", "", string))
 
 def get_section(string: str,section_map: dict) -> str:
-    section = section_map[string]
-    if(section == None): return string
-    return section
+    if string in section_map:
+        return section_map[string]
+    else:
+        return string
 
 def remove_duplicate_challans(challans: ChallanInfo):
     unique_challans = []
@@ -117,68 +118,72 @@ challans = []
 section_map = load_map(folder_path,DEFAULT_SECTION_MAP)
 count = 0
 for pdf in pdf_files:
-    count += 1
-    data = {}
-    
-    with pdfplumber.open(pdf) as ppdf:
-        page = ppdf.pages[0]
-        tables = page.extract_tables()
-        # FOR TABLE 1
-        df1 = pd.DataFrame(tables[0],columns=["line"])
-        data_map = {}
-        for index, row in df1.iterrows():
-            if ":" in row["line"]:
-                key, value = row["line"].split(":", 1)
-                data_map[key.strip()] = value.strip()
+    try:
+        count += 1
+        data = {}
         
-        
-        data["file_name"] = pdf.name
-        data["challan_no"] = data_map.get("Challan No")
-        data["bsr_code"] = data_map.get("BSR code")
-        data["tender_date"] = data_map.get("Tender Date")
-        
-        section_raw = data_map.get("Nature of Payment", "")
-        data["section_raw"] = section_raw
-        data["section"] = get_section(section_raw,section_map)
-        data["financial_year"] = data_map.get("Financial Year")
-        data["total_amount"] = get_int(data_map.get("Amount (in Rs.)"))
-        data["firm_name"] = data_map.get("Name")
+        with pdfplumber.open(pdf) as ppdf:
+            page = ppdf.pages[0]
+            tables = page.extract_tables()
+            # FOR TABLE 1
+            df1 = pd.DataFrame(tables[0],columns=["line"])
+            data_map = {}
+            for index, row in df1.iterrows():
+                if ":" in row["line"]:
+                    key, value = row["line"].split(":", 1)
+                    data_map[key.strip()] = value.strip()
+            
+            
+            data["file_name"] = pdf.name
+            data["challan_no"] = data_map.get("Challan No")
+            data["bsr_code"] = data_map.get("BSR code")
+            data["tender_date"] = data_map.get("Tender Date")
+            
+            section_raw = data_map.get("Nature of Payment", "")
+            data["section_raw"] = section_raw
+            data["section"] = get_section(section_raw,section_map)
+            data["financial_year"] = data_map.get("Financial Year")
+            data["total_amount"] = get_int(data_map.get("Amount (in Rs.)"))
+            data["firm_name"] = data_map.get("Name")
 
 
-        # FOR TABLE 2
-        df2 = pd.DataFrame(tables[1],columns=["line"])
-        tax_amount = 0
-        interest_amount = 0
-        other_amount = 0
-        for _, row in df2.iterrows():   # table2_df is your Table 2 DataFrame
-            line = row["line"].strip()
+            # FOR TABLE 2
+            df2 = pd.DataFrame(tables[1],columns=["line"])
+            tax_amount = 0
+            interest_amount = 0
+            other_amount = 0
+            for _, row in df2.iterrows():   # table2_df is your Table 2 DataFrame
+                line = row["line"].strip()
 
-            if line.startswith("A Tax"):
-                tax_amount = get_int(line.replace("A Tax",""))
+                if line.startswith("A Tax"):
+                    tax_amount = get_int(line.replace("A Tax",""))
 
-            elif line.startswith("D Interest"):
-                interest_amount = get_int(line.replace("D Interest",""))
+                elif line.startswith("D Interest"):
+                    interest_amount = get_int(line.replace("D Interest",""))
 
-            elif line.startswith("B Surcharge"):
-                other_amount += get_int(line.replace("B Surcharge",""))
+                elif line.startswith("B Surcharge"):
+                    other_amount += get_int(line.replace("B Surcharge",""))
 
-            elif line.startswith("C Cess"):
-                other_amount += get_int(line.replace("C Cess",""))
+                elif line.startswith("C Cess"):
+                    other_amount += get_int(line.replace("C Cess",""))
 
-            elif line.startswith("E Penalty"):
-                other_amount += get_int(line.replace("E Penalty",""))
+                elif line.startswith("E Penalty"):
+                    other_amount += get_int(line.replace("E Penalty",""))
 
-            elif line.startswith("F Fee under section 234E"):
-                other_amount += get_int(line.replace("F Fee under section 234E",""))
-        data["tax_amount"] = tax_amount
-        data["interest_amount"] = interest_amount
-        data["other_amount"] = other_amount
-        if(tax_amount+interest_amount+other_amount != data["total_amount"]):
-            print("Error Exctracting data from challan file "+pdf.name)
-            continue
-        challaninfo = ChallanInfo(**data)
-        challans.append(challaninfo)
-        print(f"\rData extracted from {count} out of {len(pdf_files)} Challan files.", end="")
+                elif line.startswith("F Fee under section 234E"):
+                    other_amount += get_int(line.replace("F Fee under section 234E",""))
+            data["tax_amount"] = tax_amount
+            data["interest_amount"] = interest_amount
+            data["other_amount"] = other_amount
+            if(tax_amount+interest_amount+other_amount != data["total_amount"]):
+                print("Error Exctracting data from challan file "+pdf.name)
+                continue
+            challaninfo = ChallanInfo(**data)
+            challans.append(challaninfo)
+            print(f"\rData extracted from {count} out of {len(pdf_files)} Challan files.", end="")
+    except Exception as e:
+        print(f" and error occured while procedding pdf {pdf.name}")
+        print(e)
 
 print("")
 challans = remove_duplicate_challans(challans)
@@ -220,4 +225,3 @@ else:
     print("No Challans found in folder...")
 print("")
 input("Press Enter to exit...")
-
